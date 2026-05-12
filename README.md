@@ -1,6 +1,7 @@
 # Fixed-Income-Theory
 For my Fixed Income Theory Class
 AI-Driven Recession Prediction using Macroeconomic Indicators
+
 Project Overview
 This project explores the use of machine learning models to predict NBER-defined recessions in the United States, with a particular focus on the 10-Year Treasury Constant Maturity Minus 2-Year spread (T10Y2Y), Unemployment Rate (UNRATE), and Consumer Price Index (CPIAUCSL). Recognizing the complexities of economic forecasting, including class imbalance (recessions are rare events) and non-linear relationships, this study develops and evaluates various classification models, culminating in a robust Random Forest Classifier.
 
