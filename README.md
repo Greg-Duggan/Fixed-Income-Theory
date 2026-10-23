@@ -1,57 +1,79 @@
-📉 AI-Driven Recession Prediction
+# Recession Prediction with Machine Learning
 
-Fixed Income Theory: Macroeconomic Indicators & Machine Learning
+**Fixed Income Theory · MBA coursework, The University of Scranton**
 
-🚀 Project Overview
+[!\[Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Greg-Duggan/Fixed-Income-Theory/blob/main/GDuggan_Fixed_Income.ipynb)
 
-This project leverages Machine Learning to predict NBER-defined recessions in the U.S. We specifically analyze the predictive power of:T10Y2Y: The 10-Year vs. 2-Year Treasury spread (The Yield Curve).
+This project tests how well the yield curve, alone and combined with labor and inflation data, can predict U.S. recessions as defined by the NBER. It compares a logistic regression baseline with a random forest and validates both out-of-sample against the 2001, 2008–09, and 2020 recessions.
 
-UNRATE: The Unemployment Rate.
+## Research question
 
-CPIAUCSL: Consumer Price Index (Inflation).
+How does the 10-year minus 2-year Treasury spread relate to NBER recessions, and how much does adding unemployment and inflation improve recession forecasts six months ahead?
 
-By addressing class imbalance (since recessions are rare) and non-linear relationships, this study develops a robust Random Forest Classifier to provide early warning signals for financial markets.
+## Data
 
-❓ The Research Question"How does the T10Y2Y spread relate to NBER recession indicators, and to what extent can it—combined with other macro variables—predict future economic downturns?"
+All data is pulled live from the Federal Reserve Bank of St. Louis (FRED) API.
 
-🛠 Methodology
+|Series|FRED code|Use|
+|-|-|-|
+|10-year minus 2-year Treasury spread|`T10Y2Y`|Yield curve signal (averaged to monthly)|
+|NBER recession indicator|`USREC`|Target (1 = recession)|
+|Unemployment rate|`UNRATE`|Labor market signal|
+|Consumer Price Index|`CPIAUCSL`|Converted to year-over-year inflation|
 
-📡 Data Acquisition: Real-time data fetched via the FRED API.
+## Methodology
 
-📊 Exploratory Data Analysis (EDA): Visualizing yield curve inversions. 
+1. **Exploratory analysis.** Visualized yield-curve inversions and the 2022–24 "un-inversion," and measured the spread's correlation with recessions. The relationship is strongly non-linear, so a simple correlation understates it.
+2. **Models.** Logistic regression as a baseline, and a random forest to capture non-linear relationships. Both use balanced class weights, because recessions are rare.
+3. **Six-month lead.** The target is whether the economy is in recession six months later.
+4. **Out-of-sample validation (Section 6).** For each test recession, models are trained only on data from before the test window.
+5. **Explainability.** SHAP values and random forest feature importance show which indicators drive the predictions.
 
-Finding: Strong non-linear patterns despite weak linear correlation.
+## Results
 
-🤖 Model Development:
+### Out-of-sample backtests
 
-Logistic Regression: Established a baseline.
+Each model is trained only on data before the test window and predicts recessions six months ahead.
 
-Random Forest: Trained to handle complex, non-linear economic signals.
 
-Class Balancing: Used class_weight='balanced' to ensure the model doesn't ignore recession events.
 
-🧪 Evaluation: Rigorous backtesting against the Great Financial Crisis (GFC).
+|Test window|Model|Recall|Precision|ROC AUC|
+|-|-|-|-|-|
+|Dot-com (2001)|Logistic Regression|0.00|0.00|0.71|
+|Dot-com (2001)|Random Forest|0.00|0.00|0.36|
+|GFC (2008–09)|Logistic Regression|0.00|0.00|0.75|
+|GFC (2008–09)|Random Forest|0.00|0.00|0.74|
+|COVID (2020)|Logistic Regression|0.00|0.00|0.66|
+|COVID (2020)|Random Forest|0.00|0.00|0.29|
 
-🔮 XAI (Explainability): Using Feature Importance to see what "drives" the AI’s decision.
+*Recall* is the share of recession months the model flagged; *precision* is the share of flagged months that were recessions; *ROC AUC* measures how well the predicted probabilities rank recession months above normal ones (0.5 = chance).
 
-Insights:
+### Earlier in-sample analysis
 
-🌲 Random Forest Wins: Non-linear models significantly outperformed traditional regression.
+Sections 3–5 of the notebook train on data through 2023 and then backtest the Great Financial Crisis. Because the crisis is inside the training data, the perfect scores there reflect memorization rather than forecasting. They are kept to show how the analysis developed, and Section 6 is the reliable test.
 
-⚖️ The "Secret Sauce": Adding CPI and Unemployment created a "perfect" prediction profile for the GFC.
+## Limitations
 
-💡 Feature Importance: Inflation (CPI) was the top driver (40.6%), followed by the Spread (30.6%) and Unemployment (28.8%).
+* **Few recessions.** There have been only a handful of U.S. recessions since 1976, so every test window has few positive months and results can swing on one or two predictions.
+* **Every recession is different.** The 2020 recession was caused by a pandemic shock that no economic indicator could foresee.
+* **NBER dating lags.** Recessions are officially dated months after the fact, so a real-time forecaster would not know the target as soon as this backtest does.
+* **The 2024–25 test window contains no recessions.** High accuracy there only means the model correctly predicted "no recession."
 
-🏁 Conclusion
+## Future work
 
-While the yield curve is a vital "pulse," its predictive power is supercharged when integrated with inflation and labor data. Our model successfully predicted the GFC 6 months in advance, proving that AI can offer invaluable foresight for strategic decision-making in fixed income.
+* Test 3-, 9-, and 12-month lead times.
+* Try gradient boosting (XGBoost) and add indicators such as credit spreads.
+* Build a live dashboard that updates from FRED monthly.
 
-🔮 Future Work
+## Setup
 
-⏱️ Variable Lead Times: Testing 3, 9, and 12-month forecasts.
+```bash
+git clone https://github.com/Greg-Duggan/Fixed-Income-Theory.git
+cd Fixed-Income-Theory
+pip install -r requirements.txt
+export FRED\_API\_KEY=your\_key\_here   # free key: https://fred.stlouisfed.org/docs/api/api\_key.html
+jupyter notebook GDuggan\_Fixed\_Income.ipynb
+```
 
-🧠 Advanced Models: Experimenting with XGBoost and LSTMs.
+Or open the notebook in Google Colab with the badge above; it will ask for your FRED API key when it runs.
 
-🖥️ Live Dashboard: Creating a real-time monitor using updated FRED data.
-
-💻 Setup & UsageClone: git clone [your_repo_url]Install: pip install -r requirements.txtKey: Insert your FRED API Key into the notebook.Run: Execute [your_notebook_name].ipynb to reproduce these findings!
