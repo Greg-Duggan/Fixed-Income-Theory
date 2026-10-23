@@ -77,3 +77,5 @@ jupyter notebook GDuggan\_Fixed\_Income.ipynb
 
 Or open the notebook in Google Colab with the badge above; it will ask for your FRED API key when it runs.
 
+**What the results show:** Logistic regression ranks recession months above normal months well out of sample (ROC AUC 0.66–0.75), but its probabilities stayed below the default 50% cutoff, so it never issued a recession call. The random forest, which scored perfectly in-sample, falls to or below chance on two of three recessions, a clear sign of overfitting. The simpler model generalizes better.
+
